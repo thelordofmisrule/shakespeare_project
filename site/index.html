@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Shakespeare Project</title>
+  <link rel="stylesheet" href="css/style.css"/>
+</head>
+<body class="show-lines hide-syllables"><!--  body classes drive the toggles  -->
+  <div id="sidebar">
+    <h1>Shakespeare Project</h1>
+    <ul id="play-list"></ul>
+  </div>
+
+  <div id="content">
+    <!---- toggles ---->
+    <div id="controls">
+      <label><input type="checkbox" id="toggle-lines" checked> show&nbsp;line&nbsp;numbers</label>
+      <label><input type="checkbox" id="toggle-syllables"> show&nbsp;syllables</label>
+    </div>
+
+    <!---- play output ---->
+    <h1 id="play-title" class="placeholder">Select a Play</h1>
+    <div id="play-container">
+      <p class="placeholder">Choose a play from the list to view its text.</p>
+    </div>
+  </div>
+
+  <script src="js/app.js"></script>
+</body>
+</html>

@@ -1,0 +1,71 @@
+/* ────────────────────────────
+   Page chrome
+   ──────────────────────────── */
+   html,body{margin:0;height:100%;font-family:system-ui,-apple-system,Helvetica,Arial,sans-serif}
+   body{display:flex}
+   
+   /* ─── sidebar  ─── */
+   #sidebar{
+     width:260px;box-sizing:border-box;padding:1rem;
+     border-right:1px solid #ddd;background:#fafafa;overflow-y:auto
+   }
+   #sidebar h1{margin:0 0 .7rem;font-size:1.15rem}
+   #sidebar ul{margin:0;padding:0;list-style:none}
+   #sidebar li{margin:.35rem 0}
+   #sidebar a{text-decoration:none;color:#333}
+   #sidebar a:hover{text-decoration:underline}
+   
+   /* ─── main pane ─── */
+   #content{flex:1;height:100%;overflow-y:auto;padding:1rem;box-sizing:border-box}
+   #play-title{text-align:center;font-size:1.6rem;font-weight:700;margin:0 0 1.4rem}
+   #play-container{max-width:80ch;margin:0 auto}
+   
+   /* ═════════════════════════════════
+      1.  Speaker headings
+      ═════════════════════════════════ */
+   .character{
+     display:block;              /* own line   */
+     font-weight:700;
+     margin:.6em 0 .2em;
+   }
+   .char-stop{display:none}      /* drop “.”   */
+   
+   /* ═════════════════════════════════
+      2.  Verse / prose paragraph rules
+      ═════════════════════════════════ */
+   /* “line” elements in Folio HTML are mostly <p>, sometimes <l> / .line */
+   p, l, div.line, div.verse{
+     position:relative;          /* anchor for gutter            */
+     margin:.25em 0;
+     line-height:1.28;
+     padding-right:4.5em;        /* reserve fixed gutter width   */
+   }
+   
+   /* ═════════════════════════════════
+      3.  Number-&-syllable gutter
+      ═════════════════════════════════ */
+   .numbering{
+     position:absolute; right:0; top:0;
+     width:4.25em;               /* ≈ padding-right minus smidge */
+     font-size:.75em; text-align:right;
+     line-height:1.1;            /* baseline lock                */
+     pointer-events:none;        /* clicks pass through          */
+   }
+   .numbering .line-count{display:block}
+   .numbering .syllable-count{
+     position:absolute; top:0; right:2.1em;   /* sits to left of the number */
+     font-style:italic; opacity:.55;
+   }
+   
+   /* keep identical block-height on/off */
+   p, l, div.line, div.verse{min-height:1.35em}
+   
+   /* hide/show helpers -- toggled by JS on <body> */
+   body.hide-lines     .numbering      {display:none}
+   body.hide-syllables .syllable-count {display:none}
+   
+   /* ═════════════════════════════════
+      4.  Misc Folio markup
+      ═════════════════════════════════ */
+   hi[rend~=italic]{font-style:italic}
+   
