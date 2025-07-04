@@ -40,6 +40,20 @@
   #sidebar a:hover {
     text-decoration: underline;
   }
+
+  /* Add to /site/css/style.css at the end */
+
+/* ═════════════════════════════════
+   6. Sidebar Category Headers
+   ═════════════════════════════════ */
+#sidebar .category-header {
+  font-weight: 700;
+  font-size: 1.1rem;
+  margin: 1rem 0 0.5rem;
+  color: #222;
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 0.2rem;
+}
   
   /* ─── main pane ─── */
   #content {
@@ -167,7 +181,7 @@
 
 /* The annotation pop-up box */
 #annotation-popup {
-  position: absolute; /* We'll position it with JS */
+  position: absolute;
   max-width: 300px;
   padding: 0.8rem;
   background-color: #333;
@@ -175,8 +189,57 @@
   border-radius: 6px;
   font-size: 0.9rem;
   line-height: 1.4;
-  z-index: 100;
-  
-  /* Hidden by default */
+  z-index: 1000;
   display: none;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
 }
+
+/* Add to /site/css/style.css, replacing previous Act/Prologue section */
+
+/* ═════════════════════════════════
+   7. Act, Scene, and Prologue Headers
+   ═════════════════════════════════ */
+   .act {
+    text-align: center;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 1.2rem 0 0.8rem;
+    color: #222;
+  }
+  
+  .act em {
+    font-style: normal;
+  }
+  
+  .scene {
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 700;
+    margin: 1rem 0 0.6rem;
+    color: #222;
+  }
+  
+  .scene em {
+    font-style: normal;
+  }
+  
+  .unknown-header {
+    text-align: center;
+    font-size: 1.4rem;
+    font-weight: 700;
+    margin: 1.2rem 0 0.8rem;
+    color: #222;
+  }
+  
+  .unknown-header em {
+    font-style: normal;
+  }
+
+  .direction {
+    display: block;
+    text-align: left;
+    font-size: 0.9rem;
+    color: #555;
+    margin: 0.5rem 0 0.5rem 2rem; /* Indented */
+    padding: 0.2rem 0;
+  }
