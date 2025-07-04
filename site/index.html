@@ -6,28 +6,58 @@
   <title>Shakespeare Project</title>
   <link rel="stylesheet" href="css/style.css"/>
 </head>
-<body class="show-lines hide-syllables"><!--  body classes drive the toggles  -->
+<body class="show-lines hide-syllables">
   <div id="sidebar">
-    <h1>Shakespeare Project</h1>
+    <h1><a href="#" id="home-link">Shakespeare Project</a></h1>
     <ul id="play-list"></ul>
   </div>
 
   <div id="content">
-    <!---- toggles ---->
+    <!-- Toggles -->
     <div id="controls">
-      <label><input type="checkbox" id="toggle-lines" checked> show&nbsp;line&nbsp;numbers</label>
-      <label><input type="checkbox" id="toggle-syllables"> show&nbsp;syllables</label>
+      <label><input type="checkbox" id="toggle-lines" checked> show line numbers</label>
+      <label><input type="checkbox" id="toggle-syllables"> show syllables</label>
     </div>
 
-    <!---- play output ---->
-    <h1 id="play-title" class="placeholder">Select a Play</h1>
+    <!-- Main page content -->
     <div id="play-container">
-      <p class="placeholder">Choose a play from the list to view its text.</p>
-    </div>
-  </div>
+      <section id="hero">
+        <h1>Welcome to the Shakespeare Project</h1>
+        <p class="tagline">Explore the First Folio with interactive texts, annotations, and insights.</p>
+      </section>
 
-  <div id="annotation-popup">
-    
+      <section id="blog-posts">
+        <h2>Latest Insights</h2>
+        <div class="blog-grid">
+          <article class="blog-card">
+            <h3>Understanding Shakespeare's Language</h3>
+            <p>A deep dive into the Bard’s vocabulary and annotations.</p>
+            <a href="#" class="read-more">Read More</a>
+          </article>
+          <article class="blog-card">
+            <h3>The First Folio’s Legacy</h3>
+            <p>How the 1623 publication shaped modern theater.</p>
+            <a href="#" class="read-more">Read More</a>
+          </article>
+          <article class="blog-card">
+            <h3>Why Read Shakespeare Today?</h3>
+            <p>Relevance of the plays in the 21st century.</p>
+            <a href="#" class="read-more">Read More</a>
+          </article>
+        </div>
+      </section>
+
+      <section id="links">
+        <h2>Explore More</h2>
+        <ul class="link-list">
+          <li><a href="https://shakespeare.folger.edu/" target="_blank">Folger Shakespeare Library</a></li>
+          <li><a href="https://www.rsc.org.uk/" target="_blank">Royal Shakespeare Company</a></li>
+          <li><a href="#" target="_blank">About This Project</a></li>
+        </ul>
+      </section>
+    </div>
+
+    <div id="annotation-popup"></div>
   </div>
 
   <script src="js/app.js"></script>

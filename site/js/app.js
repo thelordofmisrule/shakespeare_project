@@ -1,12 +1,15 @@
 document.addEventListener('DOMContentLoaded', () => {
-  /* ----------  A. build the sidebar ---------- */
+  /* ----------  A. Store main page content ---------- */
+  const mainPageContent = document.getElementById('play-container').innerHTML;
+
+  /* ----------  B. Build the sidebar ---------- */
   const plays = [
     // Comedies
     { title: "The Tempest", file: "firstfolio/plays/tempest.html" },
     { title: "The Two Gentlemen of Verona", file: "firstfolio/plays/two-gentlemen.html" },
     { title: "The Merry Wives of Windsor", file: "firstfolio/plays/merry-wives.html" },
     { title: "Measure for Measure", file: "firstfolio/plays/measure.html" },
-    { title: "The Comedy of Errors", file: "firstfolio/plays/comedy-of-errors.html" },
+    { title: "The Comedy of Errors", file: "firstfolio/plays/comedy-errors.html" },
     { title: "Much Ado About Nothing", file: "firstfolio/plays/much-ado.html" },
     { title: "Love’s Labour’s Lost", file: "firstfolio/plays/loves-labor.html" },
     { title: "A Midsummer Night’s Dream", file: "firstfolio/plays/midsummer.html" },
@@ -43,8 +46,9 @@ document.addEventListener('DOMContentLoaded', () => {
   ];
 
   const playList = document.getElementById('play-list');
-  const playTitle = document.getElementById('play-title');
   const playContainer = document.getElementById('play-container');
+  const homeLink = document.getElementById('home-link');
+  const bodyEl = document.body;
 
   // Define categories and their play indices
   const categories = [
@@ -55,13 +59,11 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Render plays with category headers
   categories.forEach(category => {
-    // Add category header
     const headerLi = document.createElement('li');
     headerLi.className = 'category-header';
     headerLi.textContent = category.name;
     playList.appendChild(headerLi);
 
-    // Add plays for this category
     for (let i = category.start; i < category.end; i++) {
       const play = plays[i];
       const li = document.createElement('li');
@@ -77,6 +79,13 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
+  // Handle home link click
+  homeLink.addEventListener('click', e => {
+    e.preventDefault();
+    playContainer.innerHTML = mainPageContent;
+    bodyEl.classList.remove('play-loaded'); // Hide controls
+  });
+
   function loadPlay(play) {
     fetch(play.file)
       .then(r => {
@@ -84,19 +93,24 @@ document.addEventListener('DOMContentLoaded', () => {
         return r.text();
       })
       .then(html => {
-        playTitle.textContent = play.title;
-        playContainer.innerHTML = html;
+        // Remove trailing period from .act, .scene, .unknown-header, .direction
+        let cleanedHtml = html;
+        cleanedHtml = cleanedHtml.replace(/(<h2 class="act">.*?)\.\s*<\/h2>/g, '$1</h2>');
+        cleanedHtml = cleanedHtml.replace(/(<h3 class="scene">.*?)\.\s*<\/h3>/g, '$1</h3>');
+        cleanedHtml = cleanedHtml.replace(/(<div class="unknown-header">.*?)\.\s*<\/div>/g, '$1</div>');
+        cleanedHtml = cleanedHtml.replace(/(<span class="direction">.*?)\.\s*<\/span>/g, '$1</span>');
+        playContainer.innerHTML = `<h1 id="play-title">${play.title}</h1>${cleanedHtml}`;
+        bodyEl.classList.add('play-loaded'); // Show controls
         setupAnnotations();
       })
       .catch(err => {
         console.error('Load error:', err.message);
-        playTitle.textContent = 'Error loading play';
-        playContainer.innerHTML = '';
+        playContainer.innerHTML = `<h1 id="play-title">Error loading play</h1><p>${err.message}</p>`;
+        bodyEl.classList.add('play-loaded'); // Show controls even on error
       });
   }
 
-  /* ----------  B. line / syllable toggles  ---------- */
-  const bodyEl = document.body;
+  /* ----------  C. line / syllable toggles  ---------- */
   const chkLines = document.getElementById('toggle-lines');
   const chkSyllables = document.getElementById('toggle-syllables');
 
@@ -113,6 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
   bodyEl.classList.add('show-lines', 'hide-syllables');
 });
 
+// setupAnnotations function unchanged
 function setupAnnotations() {
   const popup = document.getElementById('annotation-popup');
   const annotatedSpans = document.querySelectorAll('.annotated');
@@ -134,7 +149,6 @@ function setupAnnotations() {
       let left = rect.left + window.scrollX;
       let top = rect.bottom + window.scrollY + 5;
 
-      // Ensure popup stays within viewport
       const popupWidth = popup.offsetWidth;
       const viewportWidth = window.innerWidth;
       if (left + popupWidth > viewportWidth - 10) {

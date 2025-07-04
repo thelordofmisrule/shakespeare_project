@@ -243,3 +243,147 @@
     margin: 0.5rem 0 0.5rem 2rem; /* Indented */
     padding: 0.2rem 0;
   }
+
+/* Add to /site/css/style.css at the end */
+
+/* ═════════════════════════════════
+   9. Main Page Styles
+   ═════════════════════════════════ */
+   #hero {
+    text-align: center;
+    padding: 2rem 1rem;
+    background: #f8f8f8; /* Light background */
+    border-bottom: 1px solid #ddd;
+  }
+  
+  #hero h1 {
+    font-size: 2rem;
+    margin: 0 0 0.5rem;
+    color: #222;
+  }
+  
+  #hero .tagline {
+    font-size: 1.2rem;
+    color: #555;
+    margin: 0;
+  }
+  
+  #blog-posts {
+    padding: 1.5rem 1rem;
+    max-width: 80ch;
+    margin: 0 auto;
+  }
+  
+  #blog-posts h2 {
+    font-size: 1.6rem;
+    margin: 0 0 1rem;
+    color: #222;
+  }
+  
+  .blog-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 1rem;
+  }
+  
+  .blog-card {
+    background: #fff;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 1rem;
+    transition: box-shadow 0.2s;
+  }
+  
+  .blog-card:hover {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+  }
+  
+  .blog-card h3 {
+    font-size: 1.2rem;
+    margin: 0 0 0.5rem;
+    color: #222;
+  }
+  
+  .blog-card p {
+    font-size: 0.9rem;
+    color: #555;
+    margin: 0 0 0.5rem;
+  }
+  
+  .read-more {
+    text-decoration: none;
+    color: #007bff;
+    font-size: 0.9rem;
+  }
+  
+  .read-more:hover {
+    text-decoration: underline;
+  }
+  
+  #links {
+    padding: 1.5rem 1rem;
+    max-width: 80ch;
+    margin: 0 auto;
+    text-align: center;
+  }
+  
+  #links h2 {
+    font-size: 1.6rem;
+    margin: 0 0 1rem;
+    color: #222;
+  }
+  
+  .link-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+  }
+  
+  .link-list li {
+    margin: 0.5rem 0;
+  }
+  
+  .link-list a {
+    text-decoration: none;
+    color: #007bff;
+    font-size: 1rem;
+  }
+  
+  .link-list a:hover {
+    text-decoration: underline;
+  }
+  
+  /* Style home link in sidebar */
+  #home-link {
+    text-decoration: none;
+    color: #333;
+  }
+  
+  #home-link:hover {
+    text-decoration: underline;
+  }
+
+/* Add to /site/css/style.css at the end or within existing controls section */
+
+/* ═════════════════════════════════
+   10. Controls Visibility
+   ═════════════════════════════════ */
+   #controls {
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.5rem;
+    background: #fdfdfd;
+    padding: 0.75rem;
+    border-radius: 8px;
+    border: 1px solid #ddd;
+    font-size: 0.9rem;
+    display: none; /* Hidden by default */
+  }
+  
+  body.play-loaded #controls {
+    display: flex; /* Shown when a play is loaded */
+  }
