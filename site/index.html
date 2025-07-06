@@ -3,12 +3,14 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="Content-Security-Policy" content="img-src 'self' data: https: https://upload.wikimedia.org;"> <!-- Allow Wikimedia images -->
   <title>Shakespeare Project</title>
   <link rel="stylesheet" href="css/style.css"/>
 </head>
 <body class="show-lines hide-syllables">
   <div id="sidebar">
     <h1><a href="#" id="home-link">Shakespeare Project</a></h1>
+    <button id="theme-toggle">Toggle Dark Mode</button>
     <ul id="play-list"></ul>
   </div>
 
@@ -17,6 +19,12 @@
     <div id="controls">
       <label><input type="checkbox" id="toggle-lines" checked> show line numbers</label>
       <label><input type="checkbox" id="toggle-syllables"> show syllables</label>
+      <div id="search-container">
+        <input type="text" id="search-input" placeholder="Search play...">
+        <button id="search-next">Next</button>
+        <button id="search-prev">Prev</button>
+        <button id="search-clear">Clear</button>
+      </div>
     </div>
 
     <!-- Main page content -->

@@ -1,10 +1,7 @@
 document.addEventListener('DOMContentLoaded', () => {
-  /* ----------  A. Store main page content ---------- */
   const mainPageContent = document.getElementById('play-container').innerHTML;
-
-  /* ----------  B. Build the sidebar ---------- */
+  const playContainer = document.getElementById('play-container');
   const plays = [
-    // Comedies
     { title: "The Tempest", file: "firstfolio/plays/tempest.html" },
     { title: "The Two Gentlemen of Verona", file: "firstfolio/plays/two-gentlemen.html" },
     { title: "The Merry Wives of Windsor", file: "firstfolio/plays/merry-wives.html" },
@@ -19,7 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
     { title: "All’s Well That Ends Well", file: "firstfolio/plays/alls-well.html" },
     { title: "Twelfth Night", file: "firstfolio/plays/twelfth-night.html" },
     { title: "The Winter’s Tale", file: "firstfolio/plays/winters-tale.html" },
-    // Histories
     { title: "King John", file: "firstfolio/plays/john.html" },
     { title: "Richard II", file: "firstfolio/plays/richard-2.html" },
     { title: "Henry IV, Part 1", file: "firstfolio/plays/henry-4-1.html" },
@@ -30,7 +26,6 @@ document.addEventListener('DOMContentLoaded', () => {
     { title: "Henry VI, Part 3", file: "firstfolio/plays/henry-6-3.html" },
     { title: "Richard III", file: "firstfolio/plays/richard-3.html" },
     { title: "Henry VIII", file: "firstfolio/plays/henry-8.html" },
-    // Tragedies
     { title: "Troilus and Cressida", file: "firstfolio/plays/troylus.html" },
     { title: "Coriolanus", file: "firstfolio/plays/coriolanus.html" },
     { title: "Titus Andronicus", file: "firstfolio/plays/titus.html" },
@@ -46,18 +41,15 @@ document.addEventListener('DOMContentLoaded', () => {
   ];
 
   const playList = document.getElementById('play-list');
-  const playContainer = document.getElementById('play-container');
   const homeLink = document.getElementById('home-link');
   const bodyEl = document.body;
 
-  // Define categories and their play indices
   const categories = [
     { name: "Comedies", start: 0, end: 14 },
     { name: "Histories", start: 14, end: 24 },
     { name: "Tragedies", start: 24, end: 36 }
   ];
 
-  // Render plays with category headers
   categories.forEach(category => {
     const headerLi = document.createElement('li');
     headerLi.className = 'category-header';
@@ -79,11 +71,17 @@ document.addEventListener('DOMContentLoaded', () => {
     }
   });
 
-  // Handle home link click
   homeLink.addEventListener('click', e => {
     e.preventDefault();
     playContainer.innerHTML = mainPageContent;
-    bodyEl.classList.remove('play-loaded'); // Hide controls
+    bodyEl.classList.remove('play-loaded');
+    clearSearch(); // Clear search when returning to main page
+  });
+
+  const themeToggle = document.getElementById('theme-toggle');
+  themeToggle.addEventListener('click', () => {
+    bodyEl.classList.toggle('dark-theme');
+    themeToggle.textContent = bodyEl.classList.contains('dark-theme') ? 'Switch to Light Mode' : 'Toggle Dark Mode';
   });
 
   function loadPlay(play) {
@@ -93,24 +91,27 @@ document.addEventListener('DOMContentLoaded', () => {
         return r.text();
       })
       .then(html => {
-        // Remove trailing period from .act, .scene, .unknown-header, .direction
+        console.log('Fetched HTML for', play.title, ':', html.substring(0, 200) + '...');
         let cleanedHtml = html;
         cleanedHtml = cleanedHtml.replace(/(<h2 class="act">.*?)\.\s*<\/h2>/g, '$1</h2>');
         cleanedHtml = cleanedHtml.replace(/(<h3 class="scene">.*?)\.\s*<\/h3>/g, '$1</h3>');
         cleanedHtml = cleanedHtml.replace(/(<div class="unknown-header">.*?)\.\s*<\/div>/g, '$1</div>');
         cleanedHtml = cleanedHtml.replace(/(<span class="direction">.*?)\.\s*<\/span>/g, '$1</span>');
+
         playContainer.innerHTML = `<h1 id="play-title">${play.title}</h1>${cleanedHtml}`;
-        bodyEl.classList.add('play-loaded'); // Show controls
-        setupAnnotations();
+        console.log('Rendered HTML:', playContainer.innerHTML.substring(0, 200) + '...');
+        bodyEl.classList.add('play-loaded');
+        setupAnnotations(playContainer);
       })
       .catch(err => {
         console.error('Load error:', err.message);
         playContainer.innerHTML = `<h1 id="play-title">Error loading play</h1><p>${err.message}</p>`;
-        bodyEl.classList.add('play-loaded'); // Show controls even on error
+        console.log('Error HTML:', playContainer.innerHTML);
+        bodyEl.classList.add('play-loaded');
+        setupAnnotations(playContainer);
       });
   }
 
-  /* ----------  C. line / syllable toggles  ---------- */
   const chkLines = document.getElementById('toggle-lines');
   const chkSyllables = document.getElementById('toggle-syllables');
 
@@ -123,47 +124,228 @@ document.addEventListener('DOMContentLoaded', () => {
     bodyEl.classList.toggle('hide-syllables', !chkSyllables.checked);
   });
 
-  /* set initial classes to match default check-box state */
   bodyEl.classList.add('show-lines', 'hide-syllables');
-});
 
-// setupAnnotations function unchanged
-function setupAnnotations() {
-  const popup = document.getElementById('annotation-popup');
-  const annotatedSpans = document.querySelectorAll('.annotated');
-  console.log('Found annotated spans:', annotatedSpans.length);
+  // Search functionality (moved to DOM load)
+  const setupSearch = () => {
+    const searchInput = document.getElementById('search-input');
+    const searchNext = document.getElementById('search-next');
+    const searchPrev = document.getElementById('search-prev');
+    const searchClear = document.getElementById('search-clear');
 
-  annotatedSpans.forEach(span => {
-    span.addEventListener('click', (event) => {
-      event.stopPropagation();
-      const annotationText = span.dataset.annotation;
-      if (!annotationText) {
-        popup.style.display = 'none';
-        return;
-      }
-
-      popup.textContent = annotationText;
-      popup.style.display = 'block';
-
-      const rect = span.getBoundingClientRect();
-      let left = rect.left + window.scrollX;
-      let top = rect.bottom + window.scrollY + 5;
-
-      const popupWidth = popup.offsetWidth;
-      const viewportWidth = window.innerWidth;
-      if (left + popupWidth > viewportWidth - 10) {
-        left = viewportWidth - popupWidth - 10;
-      }
-      if (left < 10) left = 10;
-
-      popup.style.left = `${left}px`;
-      popup.style.top = `${top}px`;
-    });
-  });
-
-  document.addEventListener('click', (event) => {
-    if (!event.target.classList.contains('annotated')) {
-      popup.style.display = 'none';
+    // Check if elements exist
+    if (!searchInput || !searchNext || !searchPrev || !searchClear) {
+      console.warn('Search elements not found:', {
+        searchInput: !!searchInput,
+        searchNext: !!searchNext,
+        searchPrev: !!searchPrev,
+        searchClear: !!searchClear
+      });
+      return; // Exit if any element is null
     }
-  });
-}
+
+    let currentMatchIndex = -1;
+    let matches = [];
+
+    function findMatches(query) {
+      clearHighlights();
+      if (!query) return;
+      const textNodes = getTextNodes(playContainer);
+      matches = [];
+      textNodes.forEach(node => {
+        const walker = document.createTreeWalker(node.parentNode, NodeFilter.SHOW_TEXT, null, false);
+        let textNode;
+        while ((textNode = walker.nextNode())) {
+          if (textNode.nodeValue.trim()) {
+            const regex = new RegExp(`(${query})`, 'gi');
+            let match;
+            while ((match = regex.exec(textNode.nodeValue))) {
+              const range = document.createRange();
+              range.setStart(textNode, match.index);
+              range.setEnd(textNode, match.index + match[1].length);
+              const span = document.createElement('span');
+              span.className = 'search-highlight';
+              range.surroundContents(span);
+              matches.push(span);
+            }
+          }
+        }
+      });
+      currentMatchIndex = -1;
+      if (matches.length > 0) {
+        highlightMatch(0);
+      }
+    }
+
+    function getTextNodes(element) {
+      const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null, false);
+      const nodes = [];
+      let node;
+      while ((node = walker.nextNode())) {
+        if (node.nodeValue.trim() && !node.parentNode.classList.contains('search-highlight')) {
+          nodes.push(node);
+        }
+      }
+      return nodes;
+    }
+
+    function highlightMatch(index) {
+      if (currentMatchIndex >= 0 && currentMatchIndex < matches.length) {
+        matches[currentMatchIndex].classList.remove('current-match');
+      }
+      currentMatchIndex = (index + matches.length) % matches.length;
+      matches[currentMatchIndex].classList.add('current-match');
+      matches[currentMatchIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+
+    function clearHighlights() {
+      const highlights = playContainer.getElementsByClassName('search-highlight');
+      while (highlights.length > 0) {
+        const parent = highlights[0].parentNode;
+        while (highlights[0].firstChild) {
+          parent.insertBefore(highlights[0].firstChild, highlights[0]);
+        }
+        parent.removeChild(highlights[0]);
+      }
+      matches = [];
+      currentMatchIndex = -1;
+    }
+
+    searchInput.addEventListener('input', () => {
+      const query = searchInput.value.trim();
+      findMatches(query);
+    });
+
+    searchNext.addEventListener('click', () => {
+      if (matches.length > 0) {
+        highlightMatch(currentMatchIndex + 1);
+      }
+    });
+
+    searchPrev.addEventListener('click', () => {
+      if (matches.length > 0) {
+        highlightMatch(currentMatchIndex - 1);
+      }
+    });
+
+    searchClear.addEventListener('click', () => {
+      searchInput.value = '';
+      clearHighlights();
+    });
+
+    // Clear search when switching plays
+    function clearSearch() {
+      searchInput.value = '';
+      clearHighlights();
+    }
+  };
+
+  // Initialize search on DOM load
+  setupSearch();
+
+  // Annotations functionality (enhanced image load handling)
+  function setupAnnotations(container) {
+    const popup = document.getElementById('annotation-popup');
+    if (!popup) {
+      console.error('Error: #annotation-popup element not found in DOM');
+      return;
+    }
+
+    const annotatedSpans = container.querySelectorAll('span.annotated');
+    console.log('Found annotated spans:', annotatedSpans.length, 'Content:', Array.from(annotatedSpans).map(span => span.outerHTML));
+
+    if (annotatedSpans.length === 0) {
+      console.warn('No .annotated spans found. Check play HTML for <span class="annotated" data-annotation="...">');
+      console.log('Full #play-container HTML:', container.innerHTML.substring(0, 500) + '...');
+    }
+
+    annotatedSpans.forEach((span, index) => {
+      const newSpan = span.cloneNode(true);
+      span.parentNode.replaceChild(newSpan, span);
+      newSpan.addEventListener('click', (event) => {
+        event.stopPropagation();
+        const annotationHtml = newSpan.dataset.annotation;
+        if (!annotationHtml) {
+          console.warn(`Span ${index} has no data-annotation attribute`);
+          popup.style.display = 'none';
+          return;
+        }
+
+        console.log('Raw annotationHtml:', annotationHtml);
+        const cleanedHtml = annotationHtml.replace(/>\s*$/, ''); // Remove trailing ">"
+        console.log('Cleaned annotationHtml:', cleanedHtml);
+
+        popup.innerHTML = cleanedHtml;
+
+        // Immediate image load check with manual load
+        let img = popup.querySelector('img');
+        if (img) {
+          if (img.complete) {
+            if (!img.naturalHeight) {
+              console.error('Image failed to load (complete but no height):', img.src);
+              // Manually trigger load
+              const newImg = new Image();
+              newImg.onload = () => console.log('Manual image load successful:', img.src);
+              newImg.onerror = () => console.error('Manual image load failed:', img.src);
+              newImg.src = img.src;
+              popup.replaceChild(newImg, img);
+            } else {
+              console.log('Image loaded successfully:', img.src);
+            }
+          } else {
+            img.onload = () => console.log('Image loaded successfully:', img.src);
+            img.onerror = () => console.error('Image failed to load:', img.src);
+          }
+        }
+
+        // Fallback check after rendering
+        setTimeout(() => {
+          img = popup.querySelector('img');
+          if (img) {
+            if (img.complete && !img.naturalHeight) {
+              console.error('Image failed to load after timeout:', img.src);
+              const newImg = new Image();
+              newImg.onload = () => console.log('Manual image load after timeout successful:', img.src);
+              newImg.onerror = () => console.error('Manual image load after timeout failed:', img.src);
+              newImg.src = img.src;
+              popup.replaceChild(newImg, img);
+            } else if (!img.complete) {
+              img.onload = () => console.log('Image loaded after timeout:', img.src);
+              img.onerror = () => console.error('Image failed to load after timeout:', img.src);
+            }
+          }
+        }, 100);
+
+        popup.style.display = 'block';
+
+        const rect = newSpan.getBoundingClientRect();
+        let left = rect.left + window.scrollX;
+        let top = rect.bottom + window.scrollY + 5;
+
+        const popupWidth = popup.offsetWidth || 300;
+        const popupHeight = popup.offsetHeight || 100;
+        const viewportWidth = window.innerWidth;
+        const viewportHeight = window.innerHeight;
+
+        if (left + popupWidth > viewportWidth - 10) {
+          left = viewportWidth - popupWidth - 10;
+        }
+        if (left < 10) left = 10;
+        if (top + popupHeight > viewportHeight + window.scrollY - 10) {
+          top = rect.top + window.scrollY - popupHeight - 5;
+        }
+
+        popup.style.left = `${left}px`;
+        popup.style.top = `${top}px`;
+        console.log(`Showing popup for span ${index}: "${cleanedHtml}" at (${left}, ${top})`);
+      });
+    });
+
+    document.removeEventListener('click', null);
+    document.addEventListener('click', (event) => {
+      if (!event.target.closest('span.annotated')) {
+        popup.style.display = 'none';
+      }
+    });
+  }
+});
