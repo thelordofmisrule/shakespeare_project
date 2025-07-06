@@ -6,7 +6,7 @@ document.addEventListener('DOMContentLoaded', () => {
     { title: "The Two Gentlemen of Verona", file: "firstfolio/plays/two-gentlemen.html" },
     { title: "The Merry Wives of Windsor", file: "firstfolio/plays/merry-wives.html" },
     { title: "Measure for Measure", file: "firstfolio/plays/measure.html" },
-    { title: "The Comedy of Errors", file: "firstfolio/plays/comedy-errors.html" },
+    { title: "The Comedy of Errors", file: "firstfolio/plays/comedy-of-errors.html" },
     { title: "Much Ado About Nothing", file: "firstfolio/plays/much-ado.html" },
     { title: "Love’s Labour’s Lost", file: "firstfolio/plays/loves-labor.html" },
     { title: "A Midsummer Night’s Dream", file: "firstfolio/plays/midsummer.html" },
@@ -75,7 +75,6 @@ document.addEventListener('DOMContentLoaded', () => {
     e.preventDefault();
     playContainer.innerHTML = mainPageContent;
     bodyEl.classList.remove('play-loaded');
-    clearSearch(); // Clear search when returning to main page
   });
 
   const themeToggle = document.getElementById('theme-toggle');
@@ -125,123 +124,6 @@ document.addEventListener('DOMContentLoaded', () => {
   });
 
   bodyEl.classList.add('show-lines', 'hide-syllables');
-
-  // Search functionality (moved to DOM load)
-  const setupSearch = () => {
-    const searchInput = document.getElementById('search-input');
-    const searchNext = document.getElementById('search-next');
-    const searchPrev = document.getElementById('search-prev');
-    const searchClear = document.getElementById('search-clear');
-
-    // Check if elements exist
-    if (!searchInput || !searchNext || !searchPrev || !searchClear) {
-      console.warn('Search elements not found:', {
-        searchInput: !!searchInput,
-        searchNext: !!searchNext,
-        searchPrev: !!searchPrev,
-        searchClear: !!searchClear
-      });
-      return; // Exit if any element is null
-    }
-
-    let currentMatchIndex = -1;
-    let matches = [];
-
-    function findMatches(query) {
-      clearHighlights();
-      if (!query) return;
-      const textNodes = getTextNodes(playContainer);
-      matches = [];
-      textNodes.forEach(node => {
-        const walker = document.createTreeWalker(node.parentNode, NodeFilter.SHOW_TEXT, null, false);
-        let textNode;
-        while ((textNode = walker.nextNode())) {
-          if (textNode.nodeValue.trim()) {
-            const regex = new RegExp(`(${query})`, 'gi');
-            let match;
-            while ((match = regex.exec(textNode.nodeValue))) {
-              const range = document.createRange();
-              range.setStart(textNode, match.index);
-              range.setEnd(textNode, match.index + match[1].length);
-              const span = document.createElement('span');
-              span.className = 'search-highlight';
-              range.surroundContents(span);
-              matches.push(span);
-            }
-          }
-        }
-      });
-      currentMatchIndex = -1;
-      if (matches.length > 0) {
-        highlightMatch(0);
-      }
-    }
-
-    function getTextNodes(element) {
-      const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT, null, false);
-      const nodes = [];
-      let node;
-      while ((node = walker.nextNode())) {
-        if (node.nodeValue.trim() && !node.parentNode.classList.contains('search-highlight')) {
-          nodes.push(node);
-        }
-      }
-      return nodes;
-    }
-
-    function highlightMatch(index) {
-      if (currentMatchIndex >= 0 && currentMatchIndex < matches.length) {
-        matches[currentMatchIndex].classList.remove('current-match');
-      }
-      currentMatchIndex = (index + matches.length) % matches.length;
-      matches[currentMatchIndex].classList.add('current-match');
-      matches[currentMatchIndex].scrollIntoView({ behavior: 'smooth', block: 'center' });
-    }
-
-    function clearHighlights() {
-      const highlights = playContainer.getElementsByClassName('search-highlight');
-      while (highlights.length > 0) {
-        const parent = highlights[0].parentNode;
-        while (highlights[0].firstChild) {
-          parent.insertBefore(highlights[0].firstChild, highlights[0]);
-        }
-        parent.removeChild(highlights[0]);
-      }
-      matches = [];
-      currentMatchIndex = -1;
-    }
-
-    searchInput.addEventListener('input', () => {
-      const query = searchInput.value.trim();
-      findMatches(query);
-    });
-
-    searchNext.addEventListener('click', () => {
-      if (matches.length > 0) {
-        highlightMatch(currentMatchIndex + 1);
-      }
-    });
-
-    searchPrev.addEventListener('click', () => {
-      if (matches.length > 0) {
-        highlightMatch(currentMatchIndex - 1);
-      }
-    });
-
-    searchClear.addEventListener('click', () => {
-      searchInput.value = '';
-      clearHighlights();
-    });
-
-    // Clear search when switching plays
-    function clearSearch() {
-      searchInput.value = '';
-      clearHighlights();
-    }
-  };
-
-  // Initialize search on DOM load
-  setupSearch();
 
   // Annotations functionality (enhanced image load handling)
   function setupAnnotations(container) {
